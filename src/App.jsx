@@ -373,12 +373,11 @@ function App() {
       if (showcaseRef.current && desktopRef.current) {
         gsap.fromTo(
           desktopRef.current,
-          { scale: 0.82, rotateX: 10, y: 80, filter: "blur(12px)" },
+          { scale: 0.88, rotateX: 7, y: 56 },
           {
             scale: 1,
             rotateX: 0,
             y: 0,
-            filter: "blur(0px)",
             ease: "power2.out",
             scrollTrigger: {
               trigger: showcaseRef.current,
