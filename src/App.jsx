@@ -12,7 +12,6 @@ import {
   Check,
   ChevronRight,
   CircleDot,
-  DatabaseZap,
   FileText,
   Fingerprint,
   Gauge,
@@ -26,7 +25,6 @@ import {
   ScanSearch,
   Search,
   ShieldCheck,
-  Sparkles,
   TerminalSquare,
   TimerReset,
   Workflow,
@@ -256,10 +254,6 @@ function App() {
   const mouseY = useMotionValue(0);
   const smoothX = useSpring(mouseX, { damping: 28, stiffness: 120 });
   const smoothY = useSpring(mouseY, { damping: 28, stiffness: 120 });
-  const leftX = useTransform(smoothX, [-1, 1], [-28, 28]);
-  const leftY = useTransform(smoothY, [-1, 1], [22, -22]);
-  const rightX = useTransform(smoothX, [-1, 1], [24, -24]);
-  const rightY = useTransform(smoothY, [-1, 1], [-18, 18]);
   const centerX = useTransform(smoothX, [-1, 1], [-14, 14]);
   const centerY = useTransform(smoothY, [-1, 1], [-8, 8]);
 
@@ -403,13 +397,8 @@ function App() {
 
   return (
     <main ref={rootRef} className="app-shell">
-      <CursorGlow />
       <Hero
         heroRef={heroRef}
-        leftX={leftX}
-        leftY={leftY}
-        rightX={rightX}
-        rightY={rightY}
         centerX={centerX}
         centerY={centerY}
       />
@@ -425,117 +414,78 @@ function App() {
   );
 }
 
-function CursorGlow() {
+function LogoMark({ small = false }) {
   return (
-    <>
-      <div className="cursor-glow" aria-hidden="true" />
-      <div className="cursor-dot" aria-hidden="true" />
-    </>
+    <span className={`newato-mark ${small ? "newato-mark-small" : ""}`} aria-hidden="true">
+      <span className="mark-core">N</span>
+      <span className="mark-pulse" />
+      <span className="mark-execute mark-execute-one" />
+      <span className="mark-execute mark-execute-two" />
+    </span>
   );
 }
 
-function NeuralCanvas() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d", { alpha: true });
-    let frame;
-    let width = 0;
-    let height = 0;
-    let particles = [];
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const count = Math.min(120, Math.floor((width * height) / 12000));
-      particles = Array.from({ length: count }, (_, index) => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.28,
-        vy: (Math.random() - 0.5) * 0.28,
-        size: Math.random() * 1.7 + 0.4,
-        hue: index % 3 === 0 ? 265 : index % 3 === 1 ? 206 : 154,
-      }));
-    };
-
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-
-      const gradient = context.createRadialGradient(width * 0.5, height * 0.35, 0, width * 0.5, height * 0.35, width * 0.68);
-      gradient.addColorStop(0, "rgba(91, 72, 255, 0.16)");
-      gradient.addColorStop(0.4, "rgba(0, 145, 255, 0.08)");
-      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, width, height);
-
-      context.lineWidth = 1;
-      particles.forEach((particle, index) => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        if (particle.x < -20) particle.x = width + 20;
-        if (particle.x > width + 20) particle.x = -20;
-        if (particle.y < -20) particle.y = height + 20;
-        if (particle.y > height + 20) particle.y = -20;
-
-        for (let nextIndex = index + 1; nextIndex < particles.length; nextIndex += 1) {
-          const other = particles[nextIndex];
-          const dx = particle.x - other.x;
-          const dy = particle.y - other.y;
-          const distance = Math.hypot(dx, dy);
-
-          if (distance < 132) {
-            const opacity = (1 - distance / 132) * 0.18;
-            context.strokeStyle = `hsla(${particle.hue}, 100%, 70%, ${opacity})`;
-            context.beginPath();
-            context.moveTo(particle.x, particle.y);
-            context.lineTo(other.x, other.y);
-            context.stroke();
-          }
-        }
-
-        context.fillStyle = `hsla(${particle.hue}, 100%, 74%, 0.72)`;
-        context.shadowColor = `hsla(${particle.hue}, 100%, 62%, 0.55)`;
-        context.shadowBlur = 12;
-        context.beginPath();
-        context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        context.fill();
-        context.shadowBlur = 0;
-      });
-
-      frame = requestAnimationFrame(draw);
-    };
-
-    resize();
-    draw();
-    window.addEventListener("resize", resize);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="neural-canvas" aria-hidden="true" />;
+function AmbientBackdrop() {
+  return (
+    <div className="ambient-backdrop" aria-hidden="true">
+      <div className="ambient-mesh" />
+      <div className="ambient-grid" />
+      <div className="ambient-beam ambient-beam-one" />
+      <div className="ambient-beam ambient-beam-two" />
+      <div className="ambient-plane ambient-plane-one" />
+      <div className="ambient-plane ambient-plane-two" />
+    </div>
+  );
 }
 
-function Hero({ heroRef, leftX, leftY, rightX, rightY, centerX, centerY }) {
+function HeroSystemPreview() {
+  return (
+    <motion.div
+      className="hero-system"
+      initial={{ opacity: 0, y: 44, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 0.5, duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="system-frame">
+        <div className="system-topbar">
+          <div className="system-window-controls">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="system-address">
+            <TerminalSquare size={14} />
+            newato://execution-os/live-workflow
+          </div>
+          <div className="system-signal">live</div>
+        </div>
+        <div className="system-grid">
+          <div className="system-column launcher-column">
+            <CommandPalette mini />
+            <div className="token-panel matte-panel">
+              <span>Token discipline</span>
+              <strong>70%</strong>
+              <small>vision calls saved</small>
+            </div>
+          </div>
+          <div className="system-column execution-column">
+            <ExecutionDetailCard />
+            <InteractiveCommandDemo />
+          </div>
+          <TaskTimelinePanel compact />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Hero({ heroRef, centerX, centerY }) {
   return (
     <section ref={heroRef} className="hero-section">
-      <NeuralCanvas />
-      <div className="hero-fog hero-fog-one" />
-      <div className="hero-fog hero-fog-two" />
+      <AmbientBackdrop />
       <nav className="nav-bar" aria-label="Main navigation">
         <a href="#top" className="brand-lockup" aria-label="NEWATO home">
-          <span className="brand-glyph">N</span>
+          <LogoMark />
           <span>NEWATO</span>
         </a>
         <div className="nav-links">
@@ -548,31 +498,23 @@ function Hero({ heroRef, leftX, leftY, rightX, rightY, centerX, centerY }) {
         </MagneticButton>
       </nav>
 
-      <div className="hero-depth">
-        <motion.div className="hero-widget hero-widget-left" style={{ x: leftX, y: leftY }}>
-          <CommandPalette />
-        </motion.div>
-        <motion.div className="hero-widget hero-widget-right" style={{ x: rightX, y: rightY }}>
-          <TaskTimelinePanel compact />
-        </motion.div>
-      </div>
-
-      <motion.div className="hero-content" style={{ x: centerX, y: centerY }}>
+      <motion.div className="hero-content hero-copy" style={{ x: centerX, y: centerY }}>
         <motion.div
           className="eyebrow-pill"
           initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Sparkles size={15} />
-          Intelligence layer above every tool
+          <Workflow size={15} />
+          Execution operating layer
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 42, filter: "blur(18px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.1, duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          The AI that doesn't just answer. It executes.
+          <span>NEWATO.</span>
+          <span>The execution OS.</span>
         </motion.h1>
         <motion.p
           className="hero-subhead"
@@ -580,8 +522,8 @@ function Hero({ heroRef, leftX, leftY, rightX, rightY, centerX, centerY }) {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.24, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          Newato is the desktop AI operating layer for operators. It sees your tools, plans the workflow, executes across
-          them, pauses when you intervene, and resumes with the full context intact.
+          A computer-native agent layer that sees your workspace, builds the plan, executes across apps, and pauses when
+          human judgment matters.
         </motion.p>
         <motion.div
           className="hero-actions"
@@ -598,8 +540,9 @@ function Hero({ heroRef, leftX, leftY, rightX, rightY, centerX, centerY }) {
             Watch Live Demo
           </MagneticButton>
         </motion.div>
-        <InteractiveCommandDemo />
       </motion.div>
+
+      <HeroSystemPreview />
 
       <div className="scroll-indicator" aria-hidden="true">
         <span />
@@ -649,7 +592,7 @@ function CommandPalette({ mini = false }) {
       <div className="widget-glow" />
       <div className="command-topline">
         <div className="command-brand">
-          <span className="tiny-mark">N</span>
+          <LogoMark small />
           <span>NEWATO</span>
         </div>
         <span className="esc-key">Esc</span>
