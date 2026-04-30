@@ -120,25 +120,28 @@ const productCards = [
   {
     title: "Newato Web",
     eyebrow: "Browser extension",
-    price: "Free -> Rs. 499/mo",
     icon: RadioTower,
     copy: "The zero-friction entry point. Newato works inside browser SaaS tools by reading DOM, page state, form fields, and open tabs.",
+    stage: "Fastest way in",
+    pulse: "Live DOM + tab context",
     features: ["GHL, HubSpot, Notion, Sheets, Gmail", "Parallel prompt tabs", "Cross-tab @mention context"],
   },
   {
     title: "Newato OS",
     eyebrow: "Desktop system app",
-    price: "From Rs. 999/mo",
     icon: AppWindow,
     copy: "The full execution layer for Windows first, Mac later. Newato controls installed software with vision, mouse, keyboard, and checkpoints.",
+    stage: "Deep execution core",
+    pulse: "Vision + keyboard + mouse",
     features: ["Any-app execution", "Persistent goal stack", "Local encrypted audit ledger"],
   },
   {
     title: "Newato Mobile",
     eyebrow: "Voice continuity",
-    price: "Connected companion",
     icon: Mic,
     copy: "Speak a goal from your phone, let the laptop execute, and receive compact status cards with pause/resume control.",
+    stage: "Remote command layer",
+    pulse: "Voice in, execution out",
     features: ["Cross-device goal stack", "Haptic step confirmation", "Hindi and vernacular roadmap"],
   },
 ];
@@ -203,6 +206,199 @@ const timelineItems = [
   },
 ];
 
+const docsNavigation = [
+  {
+    title: "Introduction",
+    items: [
+      { id: "what-is-newato", label: "What is Newato?" },
+      { id: "quick-start", label: "Quick start" },
+      { id: "how-it-works", label: "How it works" },
+    ],
+  },
+  {
+    title: "Architecture",
+    items: [
+      { id: "system-architecture", label: "System architecture" },
+      { id: "directory-map", label: "Directory map" },
+      { id: "runtime-flow", label: "Runtime flow" },
+      { id: "analysis-mode", label: "Analysis mode" },
+    ],
+  },
+  {
+    title: "Platform",
+    items: [
+      { id: "tooling-and-models", label: "Tooling and models" },
+      { id: "development-workflow", label: "Development workflow" },
+      { id: "observability", label: "Observability" },
+    ],
+  },
+];
+
+const docsSections = [
+  {
+    id: "what-is-newato",
+    title: "What is Newato?",
+    kicker: "Overview",
+    paragraphs: [
+      "Newato is a local AI execution platform that runs on your computer, accepts natural-language commands, and turns them into real actions across the browser, desktop apps, files, and workflows.",
+      "It combines a React frontend, a Python backend, and an Electron desktop shell so operators can trigger work from one command surface while the system plans, executes, and reports progress in real time.",
+      "The product is built around autonomous execution, but with human control still preserved through checkpointing, pause-resume behavior, and analysis-first planning.",
+    ],
+    bullets: [
+      "Natural language task execution",
+      "Browser, code, screen, and desktop tooling",
+      "Parallel task handling with concurrency limits",
+      "Local persistence, usage tracking, and observability",
+    ],
+  },
+  {
+    id: "quick-start",
+    title: "Quick start",
+    kicker: "Get running locally",
+    paragraphs: [
+      "The core local setup follows the same flow described in your project docs: install Node.js and Python, run the setup script once, then start the development environment.",
+    ],
+    code: `# Prerequisites
+Node.js 20+
+Python 3.11+
+
+# Setup
+.\\scripts\\setup.ps1
+
+# Start development
+.\\scripts\\start-dev.ps1`,
+    bullets: [
+      "Press Ctrl + Shift + Space to open the overlay",
+      "Type a task in plain English",
+      "Let Newato plan and execute across the connected runtime",
+    ],
+  },
+  {
+    id: "how-it-works",
+    title: "How it works",
+    kicker: "Execution model",
+    paragraphs: [
+      "A user submits a task through the overlay or frontend. The request reaches the backend over WebSocket or HTTP, then moves through routing, planning, task management, tool execution, and event broadcasting.",
+      "The system is designed so execution can span browser automation, code operations, screen understanding, and external AI providers while still reporting granular progress back to the UI.",
+    ],
+    cards: [
+      { title: "Input", copy: "Overlay, frontend UI, and natural-language commands", icon: Mic },
+      { title: "Planning", copy: "Routing, analysis, orchestration, and goal decomposition", icon: Brain },
+      { title: "Execution", copy: "Browser tools, code tools, screen tools, and providers", icon: Workflow },
+      { title: "Updates", copy: "Broadcaster-driven status streaming back to the UI", icon: Activity },
+    ],
+  },
+  {
+    id: "system-architecture",
+    title: "System architecture",
+    kicker: "Core layers",
+    paragraphs: [
+      "Newato is structured as a three-layer system: Electron for the desktop shell and system integration, React for the interface layer, and Python for the backend runtime, orchestration, tools, and persistence.",
+      "That layered split makes it possible to keep UI, agent logic, and OS-level behavior independent while still coordinating them through IPC, WebSocket, and HTTP boundaries.",
+    ],
+    cards: [
+      { title: "Electron desktop app", copy: "Global shortcuts, overlay windows, tray behavior, and IPC bridge", icon: AppWindow },
+      { title: "React frontend", copy: "Task UI, overlays, progress surfaces, and realtime rendering", icon: Layers3 },
+      { title: "Python backend", copy: "Task manager, providers, tools, router, analysis engine, and database", icon: TerminalSquare },
+    ],
+  },
+  {
+    id: "directory-map",
+    title: "Directory map",
+    kicker: "Project structure",
+    paragraphs: [
+      "Your architecture file describes a clean separation between backend, frontend, Electron, scripts, and project-level documentation. The docs view below turns that into a more readable mental model.",
+    ],
+    cards: [
+      { title: "backend/", copy: "Core agent logic, analysis engine, task manager, providers, tools, and database modules", icon: Zap },
+      { title: "frontend/", copy: "React app, reusable components, hooks, store, and task UI surfaces", icon: RadioTower },
+      { title: "electron/", copy: "Window management, preload bridge, system integration, and desktop packaging", icon: AppWindow },
+      { title: "scripts/", copy: "Setup, dev startup, smoke tests, and automation helpers", icon: FileText },
+    ],
+  },
+  {
+    id: "runtime-flow",
+    title: "Runtime flow",
+    kicker: "From prompt to result",
+    paragraphs: [
+      "The execution pipeline described in the architecture docs is straightforward: user input enters the UI, the backend routes it, task management orchestrates it, providers and tools do the work, the database stores outcomes, and the broadcaster pushes updates back to the interface.",
+    ],
+    steps: [
+      "User submits a task from the overlay or frontend",
+      "Router receives the request through HTTP or WebSocket",
+      "Task manager coordinates planning and execution lifecycle",
+      "Agent chooses providers and tools for the job",
+      "Execution results are stored and broadcast back live",
+    ],
+  },
+  {
+    id: "analysis-mode",
+    title: "Analysis mode",
+    kicker: "Pre-execution planning",
+    paragraphs: [
+      "Newato supports an explicit analysis-only mode. In this path, the backend returns structured planning output without creating a task, calling tools, mutating the database, or starting execution.",
+      "This is useful when you want to inspect resource requirements, token usage, or a proposed execution path before the run actually begins.",
+    ],
+    code: `POST /tasks/analysis
+
+POST /tasks
+{
+  "description": "Research competitors and summarize findings in a markdown file",
+  "analysis": true
+}`,
+    bullets: [
+      "No task is queued",
+      "No tools are executed",
+      "No database writes are performed",
+      "Response is structured analysis JSON only",
+    ],
+  },
+  {
+    id: "tooling-and-models",
+    title: "Tooling and models",
+    kicker: "Execution stack",
+    paragraphs: [
+      "The current stack in your project docs includes React 18, Electron, Python FastAPI, Playwright, SQLite, and multi-provider model support. The runtime is designed to route work between providers and tools rather than relying on a single execution path.",
+    ],
+    cards: [
+      { title: "Frontend", copy: "React 18, Vite, and a task-focused UI layer", icon: RadioTower },
+      { title: "Runtime", copy: "Python backend with routing, orchestration, and tool registry", icon: Workflow },
+      { title: "Models", copy: "Claude, DeepSeek, Groq, and tracked LLM usage paths", icon: Brain },
+      { title: "Automation", copy: "Playwright, code tools, browser tools, and screen tools", icon: ScanSearch },
+    ],
+  },
+  {
+    id: "development-workflow",
+    title: "Development workflow",
+    kicker: "Local iteration",
+    paragraphs: [
+      "Your development flow starts backend and frontend services, waits for backend health, then launches Electron in dev mode. Frontend changes hot-reload through Vite, backend changes auto-reload through the Python server, and Electron changes require a restart.",
+      "That flow makes local iteration fast while preserving the real desktop shell behavior the product depends on.",
+    ],
+    code: `1. Start Python backend
+2. Start React dev server
+3. Wait for /ping health check
+4. Launch Electron with --dev
+5. Load overlay and sidebar windows
+6. Connect websocket to the backend runtime`,
+  },
+  {
+    id: "observability",
+    title: "Observability",
+    kicker: "Usage tracking",
+    paragraphs: [
+      "The project docs also describe a usage tracking layer routed through LiteLLM Proxy with Langfuse and local SQLite logging. That means model calls can be tracked by user, session, agent, latency, and spend instead of staying opaque.",
+      "For a system like Newato, that observability layer matters because autonomous workflows need cost visibility, traceability, and debugging at the agent-call level.",
+    ],
+    bullets: [
+      "LiteLLM proxy for routed model usage",
+      "Langfuse for tracing and observability",
+      "SQLite backup table for local usage events",
+      "Metrics API for tokens, cost, latency, and error rates",
+    ],
+  },
+];
+
 function useCountUp(target, active, duration = 1400) {
   const [value, setValue] = useState(0);
 
@@ -262,6 +458,8 @@ function App() {
   const thinkingRef = useRef(null);
   const thinkingStageRef = useRef(null);
   const trackRef = useRef(null);
+  const showLaunchCover = true;
+  const [view, setView] = useState(() => (window.location.hash.startsWith("#docs") ? "docs" : "home"));
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -271,6 +469,18 @@ function App() {
   const centerY = useTransform(smoothY, [-1, 1], [-8, 8]);
 
   useEffect(() => {
+    const syncView = () => {
+      setView(window.location.hash.startsWith("#docs") ? "docs" : "home");
+    };
+
+    syncView();
+    window.addEventListener("hashchange", syncView);
+    return () => window.removeEventListener("hashchange", syncView);
+  }, []);
+
+  useEffect(() => {
+    if (view !== "home") return undefined;
+
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -288,7 +498,7 @@ function App() {
       gsap.ticker.remove(update);
       lenis.destroy();
     };
-  }, []);
+  }, [view]);
 
   useEffect(() => {
     const handlePointer = (event) => {
@@ -327,6 +537,8 @@ function App() {
   }, [mouseX, mouseY]);
 
   useLayoutEffect(() => {
+    if (view !== "home") return undefined;
+
     const context = gsap.context(() => {
       const reveals = gsap.utils.toArray(".reveal");
       reveals.forEach((element) => {
@@ -405,24 +617,40 @@ function App() {
     }, rootRef.current);
 
     return () => context.revert();
-  }, []);
+  }, [view]);
 
   return (
-    <main ref={rootRef} className="app-shell">
+    <main ref={rootRef} className={`app-shell ${view === "docs" ? "docs-shell" : ""}`}>
       <CustomCursor />
-      <Hero
-        heroRef={heroRef}
-        centerX={centerX}
-        centerY={centerY}
-      />
-      <HeroMoatShowcase />
-      <BriefSection />
-      <ThinkingSection thinkingRef={thinkingRef} thinkingStageRef={thinkingStageRef} trackRef={trackRef} />
-      <ProductStackSection />
-      <TrustSection />
-      <CapabilitiesSection />
-      <WaitlistSection />
-      <NewatoFloatingOverlay />
+      {view === "docs" ? (
+        <DocsPage />
+      ) : (
+        <>
+          <Hero
+            heroRef={heroRef}
+            centerX={centerX}
+            centerY={centerY}
+            showLaunchCover={showLaunchCover}
+          />
+          {showLaunchCover ? (
+            <>
+              <LogoContinuityBridge />
+              <LaunchSoonSection />
+            </>
+          ) : (
+            <>
+              <HeroMoatShowcase />
+              <BriefSection />
+              <ThinkingSection thinkingRef={thinkingRef} thinkingStageRef={thinkingStageRef} trackRef={trackRef} />
+              <ProductStackSection />
+              <TrustSection />
+              <CapabilitiesSection />
+              <WaitlistSection />
+            </>
+          )}
+          {!showLaunchCover && <NewatoFloatingOverlay />}
+        </>
+      )}
     </main>
   );
 }
@@ -451,6 +679,7 @@ function LogoMark({ small = false }) {
 function AmbientBackdrop() {
   return (
     <div className="ambient-backdrop" aria-hidden="true">
+      <img className="ambient-logo-mark" src="/newato-logo.jpeg" alt="" />
       <div className="ambient-mesh" />
       <div className="ambient-grid" />
       <div className="ambient-beam ambient-beam-one" />
@@ -609,6 +838,143 @@ function NewatoFloatingOverlay() {
   );
 }
 
+function DocsPage() {
+  return (
+    <section className="docs-page">
+      <div className="docs-topbar">
+        <a href="#top" className="brand-lockup" aria-label="NEWATO home">
+          <LogoMark />
+          <span>NEWATO</span>
+        </a>
+        <div className="docs-topbar-actions">
+          <div className="docs-search" aria-hidden="true">
+            <span>Search documentation...</span>
+            <kbd>Ctrl K</kbd>
+          </div>
+          <a href="#waitlist" className="docs-toplink">Feedback</a>
+          <a href="#waitlist" className="docs-learn">Get Started</a>
+        </div>
+      </div>
+
+      <div className="docs-layout">
+        <aside className="docs-sidebar">
+          <div className="docs-sidebar-intro">
+            <span>Using Newato Runtime</span>
+            <small>Execution OS for browser, desktop, and agent workflows</small>
+          </div>
+          {docsNavigation.map((group) => (
+            <div className="docs-nav-group" key={group.title}>
+              <strong>{group.title}</strong>
+              <div>
+                {group.items.map((item) => (
+                  <a key={item.id} href={`#docs-${item.id}`}>
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </aside>
+        <div className="docs-main-scroll">
+          <div className="docs-main-layout">
+            <div className="docs-content">
+              <header className="docs-hero">
+                <span className="docs-kicker">Newato Docs</span>
+                <h1>
+                  <span>NEWATO</span>
+                  <span>Docs for the execution runtime</span>
+                </h1>
+                <p>
+                  Everything in this page is shaped from your README and architecture notes: what Newato is, how it runs,
+                  how the system is structured, and how the development flow behaves end to end.
+                </p>
+              </header>
+
+              {docsSections.map((section) => (
+                <article key={section.id} id={`docs-${section.id}`} className="docs-section-block">
+                  <div className="docs-section-head">
+                    <span>{section.kicker}</span>
+                    <h2>{section.title}</h2>
+                  </div>
+
+                  <div className="docs-copy">
+                    {section.paragraphs?.map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+
+                  {section.bullets ? (
+                    <ul className="docs-list">
+                      {section.bullets.map((bullet) => (
+                        <li key={bullet}>
+                          <Check size={15} />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+
+                  {section.steps ? (
+                    <div className="docs-steps">
+                      {section.steps.map((step, index) => (
+                        <div key={step} className="docs-step">
+                          <strong>{String(index + 1).padStart(2, "0")}</strong>
+                          <span>{step}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {section.cards ? (
+                    <div className="docs-cards">
+                      {section.cards.map((card) => {
+                        const Icon = card.icon;
+                        return (
+                          <div key={card.title} className="docs-card">
+                            <div className="docs-card-icon">
+                              <Icon size={18} />
+                            </div>
+                            <h3>{card.title}</h3>
+                            <p>{card.copy}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+
+                  {section.code ? (
+                    <div className="docs-codeblock">
+                      <div className="docs-codebar">
+                        <span>Example</span>
+                        <small>PowerShell / API</small>
+                      </div>
+                      <pre>{section.code}</pre>
+                    </div>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+
+            <aside className="docs-toc">
+              <div className="docs-toc-card">
+                <strong>On this page</strong>
+                <div>
+                  {docsSections.map((section) => (
+                    <a key={section.id} href={`#docs-${section.id}`}>
+                      {section.title}
+                    </a>
+                  ))}
+                </div>
+                <a href="#top" className="docs-edit-link">Back to landing</a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function HeroMoatShowcase() {
   return (
     <motion.section
@@ -712,7 +1078,27 @@ function HeroMoatShowcase() {
   );
 }
 
-function Hero({ heroRef, centerX, centerY }) {
+function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const isValidEmail = useMemo(() => /.+@.+\..+/.test(email), [email]);
+
+  const handleNotifySubmit = (event) => {
+    event.preventDefault();
+    if (!notifyOpen) {
+      setNotifyOpen(true);
+      return;
+    }
+    if (!isValidEmail) return;
+
+    const savedEmails = JSON.parse(window.localStorage.getItem("newatoWaitlistEmails") || "[]");
+    if (!savedEmails.includes(email)) {
+      window.localStorage.setItem("newatoWaitlistEmails", JSON.stringify([...savedEmails, email]));
+    }
+    setSubmitted(true);
+  };
+
   return (
     <section id="top" ref={heroRef} className="hero-section">
       <AmbientBackdrop />
@@ -721,14 +1107,16 @@ function Hero({ heroRef, centerX, centerY }) {
           <LogoMark />
           <span>NEWATO</span>
         </a>
-        <div className="nav-links">
-        <a href="#thinking">How NEWATO thinks</a>
-          <a href="#trust">Trust</a>
-          <a href="#moats">Moats</a>
-        </div>
-        <MagneticButton href="#waitlist" className="nav-cta">
-          Early Access
-        </MagneticButton>
+        {!showLaunchCover && (
+          <div className="nav-actions">
+            <a href="#docs" className="nav-docs">
+              Docs
+            </a>
+            <MagneticButton href="#waitlist" className="nav-cta">
+              Get Started
+            </MagneticButton>
+          </div>
+        )}
       </nav>
 
       <motion.div className="hero-content hero-copy" style={{ x: centerX, y: centerY }}>
@@ -757,21 +1145,52 @@ function Hero({ heroRef, centerX, centerY }) {
         >
           The computer-native agent for your workspace that plans, build, executes across apps & web on one command.
         </motion.p>
-        <motion.div
-          className="hero-actions"
+        <motion.form
+          className="hero-notify-form"
+          onSubmit={handleNotifySubmit}
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.36, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <MagneticButton href="#waitlist" className="primary-cta">
-            Join Early Access
+          <label htmlFor="hero-email" className="sr-only">Email address</label>
+          <AnimatePresence initial={false}>
+            {notifyOpen && (
+              <motion.input
+                id="hero-email"
+                key="hero-email"
+                type="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setSubmitted(false);
+                }}
+                placeholder="Enter your email"
+                aria-label="Email address"
+                autoFocus
+                initial={{ width: 0, opacity: 0, x: 16 }}
+                animate={{ width: "100%", opacity: 1, x: 0 }}
+                exit={{ width: 0, opacity: 0, x: 16 }}
+                transition={{ duration: 2.2, ease: [0.12, 0.84, 0.22, 1] }}
+              />
+            )}
+          </AnimatePresence>
+          <button type="submit" className={notifyOpen ? "is-open" : ""} disabled={notifyOpen && !isValidEmail}>
+            Early Access
             <ArrowRight size={18} />
-          </MagneticButton>
-          <MagneticButton href="#moats" className="secondary-cta">
-            <Layers3 size={17} />
-            See Our Moats
-          </MagneticButton>
-        </motion.div>
+          </button>
+        </motion.form>
+        <AnimatePresence>
+          {submitted && (
+            <motion.p
+              className="hero-notify-success"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+            >
+              You are on the list. We will notify you first.
+            </motion.p>
+          )}
+        </AnimatePresence>
       </motion.div>
       <div className="scroll-indicator" aria-hidden="true">
         <span />
@@ -812,6 +1231,78 @@ function MagneticButton({ children, href, className = "" }) {
     >
       {children}
     </motion.a>
+  );
+}
+
+function LogoContinuityBridge() {
+  return (
+    <div className="logo-continuity-bridge" aria-hidden="true">
+      <span className="bridge-line" />
+      <span className="bridge-dot bridge-dot-one" />
+      <span className="bridge-dot bridge-dot-two" />
+      <span className="bridge-dot bridge-dot-three" />
+    </div>
+  );
+}
+
+function LaunchSoonSection() {
+  const launchDuration = 3 * 24 * 60 * 60 * 1000;
+  const [targetTime] = useState(() => Date.now() + launchDuration + 999);
+  const [remaining, setRemaining] = useState(() => Math.max(0, targetTime - Date.now()));
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setRemaining(Math.max(0, targetTime - Date.now()));
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [targetTime]);
+
+  const totalSeconds = Math.floor(remaining / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const progress = Math.min(100, Math.max(0, ((launchDuration - remaining) / launchDuration) * 100));
+  const countdown = [
+    { label: "Days", value: days },
+    { label: "Hours", value: hours },
+    { label: "Minutes", value: minutes },
+    { label: "Seconds", value: seconds },
+  ];
+
+  return (
+    <section className="launch-soon-section">
+      <div className="launch-axis" aria-hidden="true">
+        <span className="axis-line" />
+        <span className="axis-dot axis-dot-one" />
+        <span className="axis-dot axis-dot-two" />
+        <span className="axis-dot axis-dot-three" />
+        <span className="axis-bloom axis-bloom-left" />
+        <span className="axis-bloom axis-bloom-right" />
+        <span className="axis-bloom axis-bloom-left axis-bloom-small" />
+        <span className="axis-bloom axis-bloom-right axis-bloom-small" />
+        <span className="axis-bloom-core" />
+      </div>
+      <div className="launch-soon-content">
+        <span className="eyebrow">Newato rollout</span>
+        <h2>Launching Very Soon</h2>
+        <p>We are polishing the execution layer before opening the first private access window.</p>
+
+        <div className="launch-countdown-strip" aria-label="Countdown to launch">
+          {countdown.map((item) => (
+            <div className="countdown-segment" key={item.label}>
+              <strong>{String(item.value).padStart(2, "0")}</strong>
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="launch-progress" aria-hidden="true">
+          <span style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1052,7 +1543,7 @@ function ThinkingSection({ thinkingRef, thinkingStageRef, trackRef }) {
       <div ref={thinkingStageRef} className="thinking-sticky">
         <div className="section-heading sticky-heading">
           <span className="eyebrow">How NEWATO thinks</span>
-          <h2>Plan first. Execute with checkpoints.</h2>
+          <h2>Plan first, Execute with checkpoints.</h2>
         </div>
         <div ref={trackRef} className="think-track" id="thinkingTrack">
           {thinkCards.map((card, index) => {
@@ -1140,35 +1631,94 @@ function ProductStackSection() {
         <span className="eyebrow">Product stack</span>
         <h2>Land in the browser. Expand into the OS.</h2>
         <p>
-          Newato Web brings the first habit. Newato OS becomes the monetization engine. Mobile gives the same goal stack a
-          voice-first control surface.
+          Start where work already happens, deepen into the desktop, and keep the same goal stack reachable from anywhere.
         </p>
       </div>
       <div className="product-grid">
-        {productCards.map((product) => {
+        {productCards.map((product, index) => {
           const Icon = product.icon;
           return (
             <motion.article
               className="product-card glass-panel reveal"
               key={product.title}
-              whileHover={{ y: -10, rotateX: 1.5 }}
-              transition={{ type: "spring", stiffness: 240, damping: 22 }}
+              initial={{ opacity: 0, y: 42, scale: 0.96 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-12%" }}
+              whileHover={{ y: -12, rotateX: 3, rotateY: index === 1 ? 0 : index === 0 ? 3 : -3 }}
+              transition={{ duration: 0.8, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="product-icon">
-                <Icon size={24} />
+              <motion.div
+                className="product-aurora"
+                aria-hidden="true"
+                animate={{
+                  x: ["-12%", "10%", "-8%"],
+                  y: ["0%", "-8%", "6%"],
+                  scale: [1, 1.08, 0.98],
+                }}
+                transition={{
+                  duration: 8 + index,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                }}
+              />
+              <div className="product-topline">
+                <motion.div
+                  className="product-icon"
+                  whileHover={{ rotate: [0, -8, 8, 0], scale: 1.06 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Icon size={24} />
+                </motion.div>
+                <motion.div
+                  className="product-stage"
+                  initial={{ opacity: 0, x: 12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.18 + index * 0.08, duration: 0.55 }}
+                >
+                  <span className="product-stage-dot" />
+                  {product.stage}
+                </motion.div>
               </div>
-              <span>{product.eyebrow}</span>
+              <span className="product-eyebrow">{product.eyebrow}</span>
               <h3>{product.title}</h3>
               <p>{product.copy}</p>
-              <strong>{product.price}</strong>
+              <motion.div
+                className="product-signal"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.24 + index * 0.08, duration: 0.55 }}
+              >
+                <span className="signal-label">Execution signal</span>
+                <strong>{product.pulse}</strong>
+              </motion.div>
               <ul>
-                {product.features.map((feature) => (
-                  <li key={feature}>
+                {product.features.map((feature, featureIndex) => (
+                  <motion.li
+                    key={feature}
+                    initial={{ opacity: 0, x: -18 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-18%" }}
+                    transition={{ delay: 0.3 + index * 0.08 + featureIndex * 0.08, duration: 0.45 }}
+                  >
                     <Check size={14} />
                     {feature}
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
+              <motion.div
+                className="product-beam"
+                aria-hidden="true"
+                animate={{ x: ["-40%", "120%"] }}
+                transition={{
+                  duration: 3.8 + index * 0.35,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatDelay: 1.4,
+                }}
+              />
             </motion.article>
           );
         })}
@@ -1334,4 +1884,3 @@ function WaitlistSection() {
 }
 
 export default App;
-
