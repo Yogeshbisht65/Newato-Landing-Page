@@ -1084,7 +1084,7 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
   const [notifyOpen, setNotifyOpen] = useState(false);
   const isValidEmail = useMemo(() => /.+@.+\..+/.test(email), [email]);
 
-  const handleNotifySubmit = (event) => {
+  const handleNotifySubmit = async (event) => {
     event.preventDefault();
     if (!notifyOpen) {
       setNotifyOpen(true);
@@ -1096,6 +1096,19 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
     if (!savedEmails.includes(email)) {
       window.localStorage.setItem("newatoWaitlistEmails", JSON.stringify([...savedEmails, email]));
     }
+
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+    } catch (error) {
+      console.warn("Waitlist API unavailable; email saved in localStorage only.", error);
+    }
+
     setSubmitted(true);
   };
 
