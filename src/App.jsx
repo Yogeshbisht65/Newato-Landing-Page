@@ -16,18 +16,20 @@ import {
   Fingerprint,
   Gauge,
   History,
+  Layers3,
   LockKeyhole,
   Mic,
   MousePointer2,
+  PauseCircle,
   Play,
   Power,
   RadioTower,
   ScanSearch,
-  Search,
+  Share2,
   ShieldCheck,
   TerminalSquare,
-  TimerReset,
   Workflow,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -51,14 +53,14 @@ const thinkCards = [
   {
     title: "Plan",
     eyebrow: "Step timeline",
-    copy: "It lays out the full execution path first, with pause points the user can lock before the agent begins.",
+    copy: "Newato lays out the full execution path first, with pause points the user can lock before the agent begins.",
     icon: Brain,
     metric: "9-step preview",
   },
   {
     title: "Execute",
     eyebrow: "Cross-tool action",
-    copy: "It controls browser SaaS, desktop apps, files, and workflows from one instruction without waiting for official integrations.",
+    copy: "Newato controls browser SaaS, desktop apps, files, and workflows from one instruction without waiting for official integrations.",
     icon: Zap,
     metric: "Any app",
   },
@@ -120,7 +122,7 @@ const productCards = [
     eyebrow: "Browser extension",
     price: "Free -> Rs. 499/mo",
     icon: RadioTower,
-    copy: "The zero-friction entry point. It works inside browser SaaS tools by reading DOM, page state, form fields, and open tabs.",
+    copy: "The zero-friction entry point. Newato works inside browser SaaS tools by reading DOM, page state, form fields, and open tabs.",
     features: ["GHL, HubSpot, Notion, Sheets, Gmail", "Parallel prompt tabs", "Cross-tab @mention context"],
   },
   {
@@ -128,7 +130,7 @@ const productCards = [
     eyebrow: "Desktop system app",
     price: "From Rs. 999/mo",
     icon: AppWindow,
-    copy: "The full execution layer for Windows first, Mac later. It controls installed software with vision, mouse, keyboard, and checkpoints.",
+    copy: "The full execution layer for Windows first, Mac later. Newato controls installed software with vision, mouse, keyboard, and checkpoints.",
     features: ["Any-app execution", "Persistent goal stack", "Local encrypted audit ledger"],
   },
   {
@@ -143,22 +145,34 @@ const productCards = [
 
 const moatCards = [
   {
-    title: "Version Fingerprints",
-    value: "3-5x",
-    label: "faster target",
-    copy: "At task start, Newato builds an app/version fingerprint. Known screens need fewer expensive vision calls.",
+    title: "Pause mid-run",
+    eyebrow: "Human control loop",
+    value: "01",
+    mark: "Pause",
+    label: "Review, tweak, resume",
+    copy: "Stop between steps, make a manual edit, and continue from the same live context.",
+    icon: PauseCircle,
+    tone: "control",
   },
   {
-    title: "Delta Screenshots",
-    value: "70%",
-    label: "fewer heavy calls",
-    copy: "Later steps compare changed pixels and route only unexpected states back to the full reasoning layer.",
+    title: "Shared context",
+    eyebrow: "Workspace memory",
+    value: "02",
+    mark: "Sync",
+    label: "One goal across every tab",
+    copy: "GHL, Sheets, Notion, Gmail, and local apps stay connected in one goal stack.",
+    icon: Share2,
+    tone: "context",
   },
   {
-    title: "Operator Graph",
-    value: "30+",
-    label: "sessions to learn",
-    copy: "Repeated workflows become a living map of how the user's business actually runs.",
+    title: "Smart routing",
+    eyebrow: "Algorithmic routing",
+    value: "03",
+    mark: "Route",
+    label: "Lower cost, faster paths",
+    copy: "Newato switches between vision, DOM, cached fingerprints, and lightweight deltas.",
+    icon: Gauge,
+    tone: "efficient",
   },
 ];
 
@@ -246,9 +260,8 @@ function App() {
   const rootRef = useRef(null);
   const heroRef = useRef(null);
   const thinkingRef = useRef(null);
+  const thinkingStageRef = useRef(null);
   const trackRef = useRef(null);
-  const showcaseRef = useRef(null);
-  const desktopRef = useRef(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -287,8 +300,30 @@ function App() {
       document.documentElement.style.setProperty("--cursor-y", `${event.clientY}px`);
     };
 
+    const handlePointerOver = (event) => {
+      const isInteractive = event.target.closest("a, button, input, textarea, select, [role='button']");
+      document.documentElement.classList.toggle("cursor-on-action", Boolean(isInteractive));
+    };
+
+    const handlePointerDown = () => {
+      document.documentElement.classList.add("cursor-is-pressed");
+    };
+
+    const handlePointerUp = () => {
+      document.documentElement.classList.remove("cursor-is-pressed");
+    };
+
     window.addEventListener("pointermove", handlePointer, { passive: true });
-    return () => window.removeEventListener("pointermove", handlePointer);
+    window.addEventListener("pointerover", handlePointerOver, { passive: true });
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    window.addEventListener("pointerup", handlePointerUp, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", handlePointer);
+      window.removeEventListener("pointerover", handlePointerOver);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+      document.documentElement.classList.remove("cursor-on-action", "cursor-is-pressed");
+    };
   }, [mouseX, mouseY]);
 
   useLayoutEffect(() => {
@@ -325,59 +360,36 @@ function App() {
         },
       });
 
-      if (thinkingRef.current && trackRef.current) {
-        const cards = gsap.utils.toArray(".think-card");
-        const distance = () => Math.max(0, trackRef.current.scrollWidth - window.innerWidth + 80);
+      if (thinkingRef.current && thinkingStageRef.current && trackRef.current) {
+        const measureThinkingDistance = () => {
+          const stage = thinkingStageRef.current;
+          const track = trackRef.current;
+          if (!stage || !track) return 0;
 
-        const horizontalTween = gsap.to(trackRef.current, {
-          x: () => -distance(),
-          ease: "none",
-          scrollTrigger: {
-            id: "thinkingTrack",
-            trigger: thinkingRef.current,
-            pin: true,
-            scrub: 1,
-            start: "top top",
-            end: () => `+=${distance()}`,
-            invalidateOnRefresh: true,
-          },
-        });
+          const distance = Math.max(0, track.scrollWidth - stage.clientWidth);
+          stage.style.setProperty("--thinking-distance", `${distance}px`);
+          return distance;
+        };
 
-        cards.forEach((card, index) => {
-          gsap.fromTo(
-            card,
-            { scale: 0.9, opacity: 0.45, rotateY: index % 2 === 0 ? 10 : -10 },
-            {
-              scale: 1,
-              opacity: 1,
-              rotateY: 0,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: card,
-                containerAnimation: horizontalTween,
-                start: "left center",
-                end: "center center",
-                scrub: true,
-              },
-            },
-          );
-        });
-      }
+        measureThinkingDistance();
 
-      if (showcaseRef.current && desktopRef.current) {
         gsap.fromTo(
-          desktopRef.current,
-          { scale: 0.88, rotateX: 7, y: 56 },
+          trackRef.current,
+          { x: 0 },
           {
-            scale: 1,
-            rotateX: 0,
-            y: 0,
-            ease: "power2.out",
+            x: () => -measureThinkingDistance(),
+            ease: "none",
             scrollTrigger: {
-              trigger: showcaseRef.current,
-              start: "top 75%",
-              end: "center 45%",
-              scrub: 1,
+              id: "thinkingTrack",
+              trigger: thinkingStageRef.current,
+              start: "top top",
+              end: () => `+=${Math.max(window.innerHeight * 0.65 + measureThinkingDistance(), measureThinkingDistance() * 1.15)}`,
+              scrub: 0.9,
+              pin: true,
+              pinSpacing: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onRefreshInit: measureThinkingDistance,
             },
           },
         );
@@ -397,31 +409,42 @@ function App() {
 
   return (
     <main ref={rootRef} className="app-shell">
+      <CustomCursor />
       <Hero
         heroRef={heroRef}
         centerX={centerX}
         centerY={centerY}
       />
+      <HeroMoatShowcase />
       <BriefSection />
-      <ThinkingSection thinkingRef={thinkingRef} trackRef={trackRef} />
+      <ThinkingSection thinkingRef={thinkingRef} thinkingStageRef={thinkingStageRef} trackRef={trackRef} />
       <ProductStackSection />
       <TrustSection />
-      <ShowcaseSection showcaseRef={showcaseRef} desktopRef={desktopRef} />
-      <MoatSection />
       <CapabilitiesSection />
       <WaitlistSection />
+      <NewatoFloatingOverlay />
     </main>
+  );
+}
+
+function CustomCursor() {
+  return (
+    <div className="custom-cursor" aria-hidden="true">
+      <span className="cursor-ring" />
+      <span className="cursor-core" />
+      <span className="cursor-trail" />
+    </div>
   );
 }
 
 function LogoMark({ small = false }) {
   return (
-    <span className={`newato-mark ${small ? "newato-mark-small" : ""}`} aria-hidden="true">
-      <span className="mark-core">N</span>
-      <span className="mark-pulse" />
-      <span className="mark-execute mark-execute-one" />
-      <span className="mark-execute mark-execute-two" />
-    </span>
+    <img
+      className={`newato-logo-image ${small ? "newato-logo-image-small" : ""}`}
+      src="/newato-logo.jpeg"
+      alt=""
+      aria-hidden="true"
+    />
   );
 }
 
@@ -438,50 +461,260 @@ function AmbientBackdrop() {
   );
 }
 
-function HeroSystemPreview() {
+function NewatoFloatingOverlay() {
+  const [open, setOpen] = useState(false);
+  const [showHint, setShowHint] = useState(true);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const isOverlayShortcut =
+        event.ctrlKey && event.shiftKey && (event.code === "Space" || event.key === " " || event.key === "Spacebar");
+
+      if (isOverlayShortcut) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.repeat) return;
+        setOpen((current) => !current);
+        return;
+      }
+
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, []);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setShowHint(false), 4200);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
   return (
-    <motion.div
-      className="hero-system"
+    <>
+      <AnimatePresence>
+        {showHint && (
+          <motion.div
+            className="newato-floating-hint"
+            initial={{ opacity: 0, x: 18, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 12, scale: 0.96 }}
+            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+            aria-hidden="true"
+          >
+            Press Ctrl + Shift + Space, or click this dot to open
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <motion.button
+        type="button"
+        className="newato-floating-dot"
+        aria-label="Open Newato overlay"
+        onClick={() => setOpen(true)}
+        onPointerEnter={() => setShowHint(true)}
+        onPointerLeave={() => setShowHint(false)}
+        onFocus={() => setShowHint(true)}
+        onBlur={() => setShowHint(false)}
+        initial={{ opacity: 0, x: 28, scale: 0.82 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ delay: 1.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{ scale: 1.07 }}
+        whileTap={{ scale: 0.96 }}
+      >
+        <span className="floating-orb">
+          <span className="orb-core" />
+          <span className="orb-ring" />
+        </span>
+        <span className="floating-status" />
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="newato-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button
+              type="button"
+              className="newato-overlay-backdrop"
+              aria-label="Close Newato overlay"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              className="newato-overlay-panel"
+              initial={{ opacity: 0, x: 26, scale: 0.94, filter: "blur(12px)" }}
+              animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, x: 18, scale: 0.96, filter: "blur(10px)" }}
+              transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Newato execution overlay"
+            >
+              <div className="overlay-header">
+                <div className="overlay-brand">
+                  <div>
+                    <span>NEWATO</span>
+                    <small>Local operator</small>
+                  </div>
+                </div>
+                <div className="overlay-tabs" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+                <span className="overlay-running">Running</span>
+                <button type="button" className="overlay-esc" aria-label="Collapse overlay" onClick={() => setOpen(false)}>
+                  Esc
+                </button>
+                <button type="button" aria-label="Close overlay" onClick={() => setOpen(false)}>
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="overlay-command">
+                <Mic size={18} />
+                <div>
+                  <span>Ask Newato</span>
+                  <strong>Execute across apps</strong>
+                </div>
+                <button type="button" className="analyse-button">Analyse</button>
+                <button type="button">
+                  Do
+                </button>
+              </div>
+              <div className="overlay-task">
+                <span className="task-pulse" />
+                <div>
+                  <strong>open chrome</strong>
+                  <small>Standing by with the latest task context</small>
+                </div>
+              </div>
+              <div className="overlay-actions">
+                <button type="button">All Chats</button>
+                <button type="button">Continue</button>
+              </div>
+              <p className="overlay-shortcut">Press Ctrl + Shift + Space to toggle. Press Esc to collapse.</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+function HeroMoatShowcase() {
+  return (
+    <motion.section
+      id="moats"
+      className="moats-section"
       initial={{ opacity: 0, y: 44, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 0.5, duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-12%" }}
+      transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="system-frame">
-        <div className="system-topbar">
-          <div className="system-window-controls">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="system-address">
-            <TerminalSquare size={14} />
-            newato://execution-os/live-workflow
-          </div>
-          <div className="system-signal">live</div>
+      <div className="hero-moats">
+        <div className="hero-moats-heading">
+          <span className="eyebrow">Why Newato is different</span>
+          <h2>
+            <span>Built for agents</span>
+            <span>that actually finish work.</span>
+          </h2>
         </div>
-        <div className="system-grid">
-          <div className="system-column launcher-column">
-            <CommandPalette mini />
-            <div className="token-panel matte-panel">
-              <span>Token discipline</span>
-              <strong>70%</strong>
-              <small>vision calls saved</small>
-            </div>
+        <div className="moat-showcase">
+          {moatCards.map((card, index) => {
+            return (
+              <motion.article
+                className={`moat-feature moat-${card.tone}`}
+                key={card.title}
+                initial={{ opacity: 0, y: 30, rotateX: 6 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, margin: "-12%" }}
+                transition={{ delay: index * 0.12, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -12, rotateX: 2, rotateY: index === 1 ? 0 : index === 0 ? -3 : 3 }}
+              >
+                <div className="moat-feature-shine" />
+                <div className="moat-visual" aria-hidden="true">
+                  {card.tone === "control" && (
+                    <div className="control-visual">
+                      <button type="button" aria-label="Pause execution">
+                        <PauseCircle size={28} />
+                      </button>
+                      <div className="control-rail">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                      <button type="button" aria-label="Play execution">
+                        <Play size={27} />
+                      </button>
+                    </div>
+                  )}
+                  {card.tone === "context" && (
+                    <div className="context-visual">
+                      <div className="tab-card tab-card-one">GHL</div>
+                      <div className="tab-card tab-card-two">Sheets</div>
+                      <div className="tab-card tab-card-three">Notion</div>
+                      <div className="context-node">
+                        <Layers3 size={26} />
+                      </div>
+                    </div>
+                  )}
+                  {card.tone === "efficient" && (
+                    <div className="routing-visual">
+                      <div className="route-core">
+                        <Gauge size={30} />
+                      </div>
+                      <span className="route-line route-line-one" />
+                      <span className="route-line route-line-two" />
+                      <span className="route-line route-line-three" />
+                      <span className="route-chip route-chip-one">vision</span>
+                      <span className="route-chip route-chip-two">DOM</span>
+                      <span className="route-chip route-chip-three">delta</span>
+                    </div>
+                  )}
+                </div>
+                <div className="moat-copy">
+                  <div className="moat-copy-head">
+                    <span>{card.eyebrow}</span>
+                    <strong>{card.mark}</strong>
+                  </div>
+                  <h3>{card.title}</h3>
+                  <em>{card.label}</em>
+                  <p>{card.copy}</p>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
+        <div className="moat-proof-strip">
+          <div>
+            <Power size={17} />
+            <span>Interruptible execution</span>
           </div>
-          <div className="system-column execution-column">
-            <ExecutionDetailCard />
-            <InteractiveCommandDemo />
+          <div>
+            <Share2 size={17} />
+            <span>Shared context graph</span>
           </div>
-          <TaskTimelinePanel compact />
+          <div>
+            <Zap size={17} />
+            <span>Dynamic cost routing</span>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </motion.section>
   );
 }
 
 function Hero({ heroRef, centerX, centerY }) {
   return (
-    <section ref={heroRef} className="hero-section">
+    <section id="top" ref={heroRef} className="hero-section">
       <AmbientBackdrop />
       <nav className="nav-bar" aria-label="Main navigation">
         <a href="#top" className="brand-lockup" aria-label="NEWATO home">
@@ -489,9 +722,9 @@ function Hero({ heroRef, centerX, centerY }) {
           <span>NEWATO</span>
         </a>
         <div className="nav-links">
-          <a href="#thinking">How it thinks</a>
+        <a href="#thinking">How NEWATO thinks</a>
           <a href="#trust">Trust</a>
-          <a href="#showcase">Showcase</a>
+          <a href="#moats">Moats</a>
         </div>
         <MagneticButton href="#waitlist" className="nav-cta">
           Early Access
@@ -513,8 +746,8 @@ function Hero({ heroRef, centerX, centerY }) {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.1, duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span>NEWATO.</span>
-          <span>The execution OS.</span>
+          <span>NEWATO</span>
+          <span>AI That Executes </span>
         </motion.h1>
         <motion.p
           className="hero-subhead"
@@ -522,8 +755,7 @@ function Hero({ heroRef, centerX, centerY }) {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.24, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          A computer-native agent layer that sees your workspace, builds the plan, executes across apps, and pauses when
-          human judgment matters.
+          The computer-native agent for your workspace that plans, build, executes across apps & web on one command.
         </motion.p>
         <motion.div
           className="hero-actions"
@@ -535,15 +767,12 @@ function Hero({ heroRef, centerX, centerY }) {
             Join Early Access
             <ArrowRight size={18} />
           </MagneticButton>
-          <MagneticButton href="#showcase" className="secondary-cta">
-            <Play size={17} />
-            Watch Live Demo
+          <MagneticButton href="#moats" className="secondary-cta">
+            <Layers3 size={17} />
+            See Our Moats
           </MagneticButton>
         </motion.div>
       </motion.div>
-
-      <HeroSystemPreview />
-
       <div className="scroll-indicator" aria-hidden="true">
         <span />
       </div>
@@ -817,64 +1046,87 @@ function InteractiveCommandDemo() {
   );
 }
 
-function ThinkingSection({ thinkingRef, trackRef }) {
+function ThinkingSection({ thinkingRef, thinkingStageRef, trackRef }) {
   return (
     <section id="thinking" ref={thinkingRef} className="thinking-section section-pad">
-      <div className="section-heading sticky-heading">
-        <span className="eyebrow">How it thinks</span>
-        <h2>Plan first. Execute with checkpoints.</h2>
-      </div>
-      <div ref={trackRef} className="think-track" id="thinkingTrack">
-        {thinkCards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <article className="think-card glass-panel" key={card.title}>
-              <span className="card-index">0{index + 1}</span>
-              <div className="think-icon">
-                <Icon size={26} />
-              </div>
-              <span>{card.eyebrow}</span>
-              <h3>{card.title}</h3>
-              <p>{card.copy}</p>
-              <strong>{card.metric}</strong>
-            </article>
-          );
-        })}
+      <div ref={thinkingStageRef} className="thinking-sticky">
+        <div className="section-heading sticky-heading">
+          <span className="eyebrow">How NEWATO thinks</span>
+          <h2>Plan first. Execute with checkpoints.</h2>
+        </div>
+        <div ref={trackRef} className="think-track" id="thinkingTrack">
+          {thinkCards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <article className="think-card glass-panel" key={card.title}>
+                <span className="card-index">0{index + 1}</span>
+                <div className="think-icon">
+                  <Icon size={26} />
+                </div>
+                <span>{card.eyebrow}</span>
+                <h3>{card.title}</h3>
+                <p>{card.copy}</p>
+                <strong>{card.metric}</strong>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
 }
 
 function BriefSection() {
+  const briefStats = [
+    {
+      title: "Windows first",
+      copy: "Built for India's SMB operators and the machines they actually use.",
+      icon: AppWindow,
+    },
+    {
+      title: "No API required",
+      copy: "Newato can operate like a human: screen, mouse, keyboard, and plain-language intent.",
+      icon: MousePointer2,
+    },
+    {
+      title: "Cross-tool by default",
+      copy: "GHL to Sheets to Notion to Outlook without copying context between agents.",
+      icon: Workflow,
+    },
+  ];
+
   return (
     <section className="brief-section section-pad">
       <div className="brief-layout">
         <div className="section-heading reveal">
           <span className="eyebrow">Founding thesis</span>
-          <h2>The last layer, not another silo.</h2>
+          <h2>The final layer, not another silo.</h2>
           <p>
-            Every serious operator already uses multiple excellent tools. The missing product is the intelligence layer
-            above them: one command, one goal stack, one execution surface across the entire workflow.
+            Every serious operator already uses multiple excellent tools. Newato aims to become the intelligence layer
+            above them: one command, one goal stack, one execution surface across the workflow.
           </p>
         </div>
         <div className="brief-card glass-panel reveal">
+          <div className="brief-card-mark" aria-hidden="true">
+            <Layers3 size={24} />
+          </div>
           <span className="panel-kicker">Design target</span>
-          <blockquote>After Newato, what tool does anyone need to build?</blockquote>
-          <p>The answer should be none. That is the north star behind the product.</p>
+          <blockquote>Newato aims to be the final layer operators need.</blockquote>
+          <p>That is the north star behind the product: reduce tool switching, not replace the tools teams already trust.</p>
         </div>
         <div className="brief-stats">
-          <div className="brief-stat glass-panel reveal">
-            <strong>Windows first</strong>
-            <span>Built for India's SMB operators and the machines they actually use.</span>
-          </div>
-          <div className="brief-stat glass-panel reveal">
-            <strong>No API required</strong>
-            <span>Newato can operate like a human: screen, mouse, keyboard, and plain-language intent.</span>
-          </div>
-          <div className="brief-stat glass-panel reveal">
-            <strong>Cross-tool by default</strong>
-            <span>GHL to Sheets to Notion to Outlook without copying context between agents.</span>
-          </div>
+          {briefStats.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <div className="brief-stat glass-panel reveal" key={stat.title}>
+                <div className="brief-stat-icon" aria-hidden="true">
+                  <Icon size={18} />
+                </div>
+                <strong>{stat.title}</strong>
+                <span>{stat.copy}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -940,7 +1192,7 @@ function TrustSection() {
         <h2>You stay in control. Newato keeps moving.</h2>
         <p>
           Before execution, Newato shows the full plan. During execution, touching the mouse pauses instantly. After your
-          edit, it compares the screen, updates the master prompt, and resumes from the checkpoint.
+          edit, Newato compares the screen, updates the master prompt, and resumes from the checkpoint.
         </p>
       </div>
       <div className="trust-layout">
@@ -997,76 +1249,6 @@ function TrustSection() {
   );
 }
 
-function ShowcaseSection({ showcaseRef, desktopRef }) {
-  return (
-    <section id="showcase" ref={showcaseRef} className="showcase-section section-pad">
-      <div className="section-heading reveal">
-        <span className="eyebrow">Live product showcase</span>
-        <h2>One instruction across the whole digital world.</h2>
-        <p>
-          The overlay appears with Ctrl+Shift+Space, understands the active software, shows the step timeline, then executes
-          across SaaS tabs and installed desktop apps.
-        </p>
-      </div>
-      <div ref={desktopRef} className="desktop-stage">
-        <div className="desktop-topbar">
-          <div className="traffic-lights">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="desktop-address">
-            <Search size={15} />
-              newato://goal-stack/ghl-sheets-notion
-          </div>
-          <TimerReset size={17} />
-        </div>
-        <div className="desktop-grid">
-          <div className="desktop-column">
-            <CommandPalette mini />
-            <div className="chat-stack glass-panel">
-              <div className="chat-line user">Pull last week's client data from GHL into this Sheets template.</div>
-              <div className="chat-line ai">I found GHL, Sheets, and Notion. Step 6 is locked for manual review.</div>
-              <div className="approval-card">
-                <ShieldCheck size={17} />
-                <span>Approve 9-step execution plan</span>
-                <button type="button">Approve</button>
-              </div>
-            </div>
-          </div>
-          <ExecutionDetailCard />
-          <TaskTimelinePanel />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MoatSection() {
-  return (
-    <section className="moat-section section-pad">
-      <div className="section-heading reveal">
-        <span className="eyebrow">Technical moat</span>
-        <h2>Built to get cheaper, faster, and smarter with use.</h2>
-        <p>
-          Newato does not treat every screenshot like a brand-new mystery. It compounds app knowledge through version
-          fingerprints, delta screenshots, and the Operator Graph.
-        </p>
-      </div>
-      <div className="moat-grid">
-        {moatCards.map((card) => (
-          <article className="moat-card glass-panel reveal" key={card.title}>
-            <span>{card.title}</span>
-            <strong>{card.value}</strong>
-            <em>{card.label}</em>
-            <p>{card.copy}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function CapabilitiesSection() {
   return (
     <section className="capabilities-section section-pad">
@@ -1112,7 +1294,7 @@ function WaitlistSection() {
       <div className="waitlist-glow" />
       <div className="section-heading reveal">
         <span className="eyebrow">Early access</span>
-        <h2>The future won't click. It will command.</h2>
+        <h2>The future won't click. NEWATO will command.</h2>
         <p>Join the private rollout for operators who want one intelligence layer above every tool they already use.</p>
       </div>
       <form className="waitlist-form glass-panel reveal" onSubmit={handleSubmit}>
@@ -1152,3 +1334,4 @@ function WaitlistSection() {
 }
 
 export default App;
+
