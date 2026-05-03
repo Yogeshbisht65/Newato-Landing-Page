@@ -458,7 +458,7 @@ function App() {
   const thinkingRef = useRef(null);
   const thinkingStageRef = useRef(null);
   const trackRef = useRef(null);
-  const showLaunchCover = true;
+  const showLaunchCover = false;
   const [view, setView] = useState(() => (window.location.hash.startsWith("#docs") ? "docs" : "home"));
 
   const mouseX = useMotionValue(0);
@@ -679,7 +679,6 @@ function LogoMark({ small = false }) {
 function AmbientBackdrop() {
   return (
     <div className="ambient-backdrop" aria-hidden="true">
-      <img className="ambient-logo-mark" src="/newato-logo.jpeg" alt="" />
       <div className="ambient-mesh" />
       <div className="ambient-grid" />
       <div className="ambient-beam ambient-beam-one" />
@@ -1139,16 +1138,16 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Workflow size={15} />
-          Execution operating layer
+          <CircleDot size={12} color="#7568EC" />
+          Welcome to Newato
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 42, filter: "blur(18px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.1, duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span>NEWATO</span>
-          <span>AI That Executes </span>
+          <span>We Are <strong>Newato</strong></span>
+          <span>AI That <strong>Executes</strong></span>
         </motion.h1>
         <motion.p
           className="hero-subhead"
@@ -1156,42 +1155,53 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.24, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          The computer-native agent for your workspace that plans, build, executes across apps & web on one command.
+          The next-generation <strong>computer-native agent</strong> designed for high-performance workspaces. Newato intelligently plans, builds, and executes complex workflows across all your apps and the web with a single autonomous command layer.
         </motion.p>
-        <motion.form
-          className="hero-notify-form"
-          onSubmit={handleNotifySubmit}
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.36, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <label htmlFor="hero-email" className="sr-only">Email address</label>
-          <AnimatePresence initial={false}>
-            {notifyOpen && (
-              <motion.input
-                id="hero-email"
-                key="hero-email"
-                type="email"
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                  setSubmitted(false);
-                }}
-                placeholder="Enter your email"
-                aria-label="Email address"
-                autoFocus
-                initial={{ width: 0, opacity: 0, x: 16 }}
-                animate={{ width: "100%", opacity: 1, x: 0 }}
-                exit={{ width: 0, opacity: 0, x: 16 }}
-                transition={{ duration: 2.2, ease: [0.12, 0.84, 0.22, 1] }}
-              />
-            )}
-          </AnimatePresence>
-          <button type="submit" className={notifyOpen ? "is-open" : ""} disabled={notifyOpen && !isValidEmail}>
-            Early Access
-            <ArrowRight size={18} />
-          </button>
-        </motion.form>
+        <div className="hero-actions">
+          <motion.form
+            className="hero-notify-form"
+            onSubmit={handleNotifySubmit}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.36, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <label htmlFor="hero-email" className="sr-only">Email address</label>
+            <AnimatePresence initial={false}>
+              {notifyOpen && (
+                <motion.input
+                  id="hero-email"
+                  key="hero-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    setSubmitted(false);
+                  }}
+                  placeholder="Enter your email"
+                  aria-label="Email address"
+                  autoFocus
+                  initial={{ width: 0, opacity: 0, x: 16 }}
+                  animate={{ width: "100%", opacity: 1, x: 0 }}
+                  exit={{ width: 0, opacity: 0, x: 16 }}
+                  transition={{ duration: 2.2, ease: [0.12, 0.84, 0.22, 1] }}
+                />
+              )}
+            </AnimatePresence>
+            <button type="submit" className={notifyOpen ? "is-open primary-hero-btn" : "primary-hero-btn"} disabled={notifyOpen && !isValidEmail}>
+              Early Access
+              <ArrowRight size={18} />
+            </button>
+          </motion.form>
+          <motion.a
+            href="#docs"
+            className="secondary-hero-btn"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.42, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Read the Docs
+          </motion.a>
+        </div>
         <AnimatePresence>
           {submitted && (
             <motion.p
