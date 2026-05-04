@@ -458,7 +458,19 @@ function App() {
   const thinkingRef = useRef(null);
   const thinkingStageRef = useRef(null);
   const trackRef = useRef(null);
-  const showLaunchCover = false;
+  const [isLive, setIsLive] = useState(false);
+  const showLaunchCover = !isLive;
+
+  useEffect(() => {
+    const handleToggle = (e) => {
+      if (e.shiftKey && (e.key === "L" || e.key === "l")) {
+        setIsLive((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleToggle);
+    return () => window.removeEventListener("keydown", handleToggle);
+  }, []);
+
   const [view, setView] = useState(() => (window.location.hash.startsWith("#docs") ? "docs" : "home"));
 
   const mouseX = useMotionValue(0);
@@ -1131,90 +1143,103 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
         )}
       </nav>
 
-      <motion.div className="hero-content hero-copy" style={{ x: centerX, y: centerY }}>
-        <motion.div
-          className="eyebrow-pill"
-          initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <CircleDot size={12} color="#7568EC" />
-          Welcome to Newato
-        </motion.div>
-        <motion.h1
-          initial={{ opacity: 0, y: 42, filter: "blur(18px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ delay: 0.1, duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <span>We Are <strong>Newato</strong></span>
-          <span>AI That <strong>Executes</strong></span>
-        </motion.h1>
-        <motion.p
-          className="hero-subhead"
-          initial={{ opacity: 0, y: 28, filter: "blur(12px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ delay: 0.24, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        >
-          The next-generation <strong>computer-native agent</strong> designed for high-performance workspaces. Newato intelligently plans, builds, and executes complex workflows across all your apps and the web with a single autonomous command layer.
-        </motion.p>
-        <div className="hero-actions">
-          <motion.form
-            className="hero-notify-form"
-            onSubmit={handleNotifySubmit}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.36, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      <div className="hero-grid">
+        <motion.div className="hero-content hero-copy" style={{ x: centerX, y: centerY }}>
+          <motion.div
+            className="eyebrow-pill"
+            initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           >
-            <label htmlFor="hero-email" className="sr-only">Email address</label>
-            <AnimatePresence initial={false}>
-              {notifyOpen && (
-                <motion.input
-                  id="hero-email"
-                  key="hero-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                    setSubmitted(false);
-                  }}
-                  placeholder="Enter your email"
-                  aria-label="Email address"
-                  autoFocus
-                  initial={{ width: 0, opacity: 0, x: 16 }}
-                  animate={{ width: "100%", opacity: 1, x: 0 }}
-                  exit={{ width: 0, opacity: 0, x: 16 }}
-                  transition={{ duration: 2.2, ease: [0.12, 0.84, 0.22, 1] }}
-                />
-              )}
-            </AnimatePresence>
-            <button type="submit" className={notifyOpen ? "is-open primary-hero-btn" : "primary-hero-btn"} disabled={notifyOpen && !isValidEmail}>
-              Early Access
-              <ArrowRight size={18} />
-            </button>
-          </motion.form>
-          <motion.a
-            href="#docs"
-            className="secondary-hero-btn"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.42, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            <CircleDot size={12} color="#7568EC" />
+            Welcome to Newato
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 42, filter: "blur(18px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ 
+              delay: 0.1, 
+              duration: 1.15, 
+              ease: [0.22, 1, 0.36, 1]
+            }}
           >
-            Read the Docs
-          </motion.a>
-        </div>
-        <AnimatePresence>
-          {submitted && (
-            <motion.p
-              className="hero-notify-success"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-            >
-              You are on the list. We will notify you first.
-            </motion.p>
+            <span><strong>Newato</strong></span>
+            <span>AI That <strong>Executes</strong></span>
+          </motion.h1>
+          <motion.p
+            className="hero-subhead"
+            initial={{ opacity: 0, y: 28, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ delay: 0.24, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          >
+            The next-generation <strong>computer-native agent</strong> designed for high-performance workspaces. Newato intelligently plans, builds, and executes complex workflows across all your apps and the web with a single autonomous command layer.
+          </motion.p>
+          {!showLaunchCover && (
+            <div className="hero-actions">
+              <motion.form
+                className="hero-notify-form"
+                onSubmit={handleNotifySubmit}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.36, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <label htmlFor="hero-email" className="sr-only">Email address</label>
+                <AnimatePresence initial={false}>
+                  {notifyOpen && (
+                    <motion.input
+                      id="hero-email"
+                      key="hero-email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        setSubmitted(false);
+                      }}
+                      placeholder="Enter your email"
+                      aria-label="Email address"
+                      autoFocus
+                      initial={{ width: 0, opacity: 0, x: 16 }}
+                      animate={{ width: "100%", opacity: 1, x: 0 }}
+                      exit={{ width: 0, opacity: 0, x: 16 }}
+                      transition={{ duration: 2.2, ease: [0.12, 0.84, 0.22, 1] }}
+                    />
+                  )}
+                </AnimatePresence>
+                <button type="submit" className={notifyOpen ? "is-open primary-hero-btn" : "primary-hero-btn"} disabled={notifyOpen && !isValidEmail}>
+                  Early Access
+                  <ArrowRight size={18} />
+                </button>
+              </motion.form>
+              <motion.a
+                href="#docs"
+                className="secondary-hero-btn"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.42, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              >
+                Read the Docs
+              </motion.a>
+            </div>
           )}
-        </AnimatePresence>
-      </motion.div>
+          <AnimatePresence>
+            {!showLaunchCover && submitted && (
+              <motion.p
+                className="hero-notify-success"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+              >
+                You are on the list. We will notify you first.
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+        
+        <div className="hero-visual">
+          <InteractiveCommandDemo />
+          <TaskTimelinePanel compact />
+        </div>
+      </div>
       <div className="scroll-indicator" aria-hidden="true">
         <span />
       </div>
@@ -1269,24 +1294,29 @@ function LogoContinuityBridge() {
 }
 
 function LaunchSoonSection() {
-  const launchDuration = 3 * 24 * 60 * 60 * 1000;
-  const [targetTime] = useState(() => Date.now() + launchDuration + 999);
-  const [remaining, setRemaining] = useState(() => Math.max(0, targetTime - Date.now()));
+  const launchDate = useMemo(() => new Date("2026-05-07T00:00:00"), []);
+  const [remaining, setRemaining] = useState(() => Math.max(0, launchDate.getTime() - Date.now()));
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setRemaining(Math.max(0, targetTime - Date.now()));
+      const now = Date.now();
+      const diff = Math.max(0, launchDate.getTime() - now);
+      setRemaining(diff);
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [targetTime]);
+  }, [launchDate]);
 
   const totalSeconds = Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  const progress = Math.min(100, Math.max(0, ((launchDuration - remaining) / launchDuration) * 100));
+  
+  // Progress based on a fixed start date (e.g., May 1st, 2026)
+  const startDate = new Date("2026-05-01T00:00:00").getTime();
+  const totalDuration = launchDate.getTime() - startDate;
+  const progress = Math.min(100, Math.max(0, ((totalDuration - remaining) / totalDuration) * 100));
   const countdown = [
     { label: "Days", value: days },
     { label: "Hours", value: hours },
