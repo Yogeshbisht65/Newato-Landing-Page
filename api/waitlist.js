@@ -14,17 +14,28 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!process.env.RESEND_API_KEY) {
+      return res.status(500).json({ error: 'API Key missing on server' });
+    }
+
     // 1. Add the email to your Resend Audience (Waitlist)
-    // Note: You must create an Audience in the Resend Dashboard first
-    const { data, error } = await resend.contacts.create({
+    const payload = {
       email: email,
       unsubscribed: false,
-      audienceId: process.env.RESEND_AUDIENCE_ID || '', // Optional: if you want to use Audiences
-    });
+    };
+
+    if (process.env.RESEND_AUDIENCE_ID) {
+      payload.audienceId = process.env.RESEND_AUDIENCE_ID;
+    }
+
+    const { data, error } = await resend.contacts.create(payload);
 
     if (error) {
       console.error('Resend Error:', error);
-      return res.status(500).json({ error: 'Failed to add to waitlist' });
+      return res.status(500).json({ 
+        error: 'Resend API Error', 
+        details: error.message || error 
+      });
     }
 
     // 2. Optional: Send a welcome email to the user
