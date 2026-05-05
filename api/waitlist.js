@@ -24,8 +24,11 @@ export default async function handler(req, res) {
       unsubscribed: false,
     };
 
-    if (process.env.RESEND_AUDIENCE_ID) {
-      payload.audienceId = process.env.RESEND_AUDIENCE_ID;
+    const audienceId = process.env.RESEND_AUDIENCE_ID;
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(audienceId);
+
+    if (audienceId && isUUID) {
+      payload.audienceId = audienceId;
     }
 
     const { data, error } = await resend.contacts.create(payload);
