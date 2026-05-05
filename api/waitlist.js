@@ -1,51 +1,45 @@
-import { MongoClient } from "mongodb";
+import { Resend } from 'resend';
 
-let cachedClient;
-
-async function getClient() {
-  if (cachedClient) return cachedClient;
-
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI is not configured");
-  }
-
-  cachedClient = new MongoClient(process.env.MONGODB_URI);
-  await cachedClient.connect();
-  return cachedClient;
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ ok: false, error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { email } = req.body;
+
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ error: 'Invalid email address' });
   }
 
   try {
-    const email = String(req.body?.email || "").trim().toLowerCase();
+    // 1. Add the email to your Resend Audience (Waitlist)
+    // Note: You must create an Audience in the Resend Dashboard first
+    const { data, error } = await resend.contacts.create({
+      email: email,
+      unsubscribed: false,
+      audienceId: process.env.RESEND_AUDIENCE_ID || '', // Optional: if you want to use Audiences
+    });
 
-    if (!/.+@.+\..+/.test(email)) {
-      return res.status(400).json({ ok: false, error: "Invalid email" });
+    if (error) {
+      console.error('Resend Error:', error);
+      return res.status(500).json({ error: 'Failed to add to waitlist' });
     }
 
-    const client = await getClient();
-    const database = client.db(process.env.MONGODB_DB || "newato");
-    const collection = database.collection(process.env.MONGODB_COLLECTION || "waitlist");
+    // 2. Optional: Send a welcome email to the user
+    /*
+    await resend.emails.send({
+      from: 'Newato <hello@yourdomain.com>',
+      to: email,
+      subject: 'You are on the list!',
+      html: '<p>Welcome to the Newato private rollout. We will notify you soon.</p>'
+    });
+    */
 
-    const result = await collection.updateOne(
-      { email },
-      {
-        $setOnInsert: {
-          email,
-          createdAt: new Date(),
-          source: "landing-page",
-        },
-      },
-      { upsert: true },
-    );
-
-    return res.status(200).json({ ok: true, saved: Boolean(result.upsertedCount) });
-  } catch (error) {
-    console.error("Waitlist save failed:", error);
-    return res.status(500).json({ ok: false, error: "Could not save email" });
+    return res.status(200).json({ message: 'Success' });
+  } catch (err) {
+    console.error('Server Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

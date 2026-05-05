@@ -36,10 +36,10 @@ import {
 gsap.registerPlugin(ScrollTrigger);
 
 const steps = [
-  "Identify GHL, Sheets, and Notion context",
-  "Generate a reversible 9-step plan",
-  "Lock the manual review step",
-  "Resume and verify final handoff",
+  "Map competitive landscape",
+  "Synthesize gap analysis",
+  "Generate strategic narrative",
+  "Build execution slide deck",
 ];
 
 const thinkCards = [
@@ -55,7 +55,7 @@ const thinkCards = [
     eyebrow: "Step timeline",
     copy: "Newato lays out the full execution path first, with pause points the user can lock before the agent begins.",
     icon: Brain,
-    metric: "9-step preview",
+    metric: "12 steps",
   },
   {
     title: "Execute",
@@ -69,7 +69,7 @@ const thinkCards = [
     eyebrow: "Human-in-loop",
     copy: "If you touch the mouse, Newato pauses, watches your edit, updates the master prompt, and continues from the checkpoint.",
     icon: ShieldCheck,
-    metric: "No black box",
+    metric: "4.3k tokens",
   },
 ];
 
@@ -77,42 +77,42 @@ const capabilities = [
   {
     title: "Newato Web",
     icon: RadioTower,
-    copy: "Chrome-first execution for SaaS tools using page, DOM, tab, and form intelligence.",
+    copy: "DOM-level browser execution across SaaS platforms. Gmail, Notion, LinkedIn, Google Docs — interacted with at the structure level, not the pixel level.",
   },
   {
     title: "Newato OS",
     icon: AppWindow,
-    copy: "Windows desktop control for Excel, Slack, VS Code, Figma, Outlook, files, and native apps.",
+    copy: "Native Windows automation with accessibility-layer precision. Excel, VS Code, Slack, Figma, Outlook — controlled like a human operator who never makes mistakes.",
   },
   {
-    title: "Pause-Resume-Tweak",
+    title: "Pause. Override. Continue.",
     icon: Workflow,
-    copy: "Lock steps, interrupt with the mouse, edit manually, then let the agent re-plan and continue.",
+    copy: "Interrupt any running workflow at any step. Make manual corrections. Newato re-orients around your change and continues — without losing context or starting over.",
   },
   {
-    title: "Version Detection",
+    title: "Visual State Intelligence",
     icon: ScanSearch,
-    copy: "One full visual scan creates a fingerprint; later steps use fast delta checks where possible.",
+    copy: "A single screen scan builds a structural fingerprint of your environment. Subsequent steps use delta detection — only processing what changed. Fast, precise, and resource-efficient.",
   },
   {
-    title: "Operator Graph",
+    title: "Workflow Graph",
     icon: Brain,
-    copy: "Newato learns which tools, people, and tasks connect inside each user's business.",
+    copy: "Newato maps the tools, people, and tasks that define how you work. Every execution makes the graph sharper. Every workflow becomes faster than the last.",
   },
   {
-    title: "Warm Agent Pool",
+    title: "Instant Agent Recall",
     icon: Zap,
-    copy: "Frequently used agents stay ready, turning repeated workflows into near-instant activations.",
+    copy: "Frequently executed workflows are kept warm in memory. Repeated tasks activate in near-zero time. The more you use Newato, the less you wait.",
   },
   {
-    title: "IDE Experience",
+    title: "Build Mode",
     icon: TerminalSquare,
-    copy: "Build mode opens code, live preview, and step timeline in one adaptive workspace.",
+    copy: "An integrated execution environment with live code view, step timeline, and real-time preview — for operators who want to inspect, modify, and extend their agent workflows.",
   },
   {
     title: "Newato Mobile",
     icon: CalendarClock,
-    copy: "Voice-first remote execution with pause states synced back to the connected laptop.",
+    copy: "Voice-triggered remote execution from your phone. Issue commands, receive results, and stay in sync with your desktop agent — from anywhere.",
   },
 ];
 
@@ -181,28 +181,34 @@ const moatCards = [
 
 const timelineItems = [
   {
-    title: "Read GHL client data",
+    title: "Summarize Unread Emails",
     status: "done",
-    tokens: "1.2k",
-    log: "GHL version and pipeline state identified",
+    tokens: "12s",
+    log: "12 unread emails analyzed. 3 high-priority replies flagged for today.",
   },
   {
-    title: "Format Sheets template",
+    title: "Competitive Landscape Mapped",
     status: "done",
-    tokens: "2.4k",
-    log: "Rows mapped into weekly client schema",
+    tokens: "4.8s",
+    log: "14 competitor websites scanned. Pricing and features structured.",
   },
   {
-    title: "Manual review column",
+    title: "Gap Analysis Synthesized",
+    status: "done",
+    tokens: "2.1s",
+    log: "6 positioning gaps identified where competitors underserve mid-market.",
+  },
+  {
+    title: "Strategic Narrative Review",
     status: "paused",
-    tokens: "step 6",
-    log: "Locked for user edit before resume",
+    tokens: "step 9",
+    log: "Draft executive summary ready. Confirm preferred angle.",
   },
   {
-    title: "Publish Notion summary",
+    title: "Slides Being Generated",
     status: "done",
-    tokens: "4 min",
-    log: "Q1 project page updated and verified",
+    tokens: "18s",
+    log: "Google Slides deck structured with recommended positioning.",
   },
 ];
 
@@ -1145,21 +1151,13 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
 
       <div className="hero-grid">
         <motion.div className="hero-content hero-copy" style={{ x: centerX, y: centerY }}>
-          <motion.div
-            className="eyebrow-pill"
-            initial={{ opacity: 0, y: 18, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <CircleDot size={12} color="#7568EC" />
-            Welcome to Newato
-          </motion.div>
+
           <motion.h1
             initial={{ opacity: 0, y: 42, filter: "blur(18px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ 
-              delay: 0.1, 
-              duration: 1.15, 
+            transition={{
+              delay: 0.1,
+              duration: 1.15,
               ease: [0.22, 1, 0.36, 1]
             }}
           >
@@ -1172,8 +1170,9 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.24, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           >
-            The next-generation <strong>computer-native agent</strong> designed for high-performance workspaces. Newato intelligently plans, builds, and executes complex workflows across all your apps and the web with a single autonomous command layer.
+            Newato is a <strong>computer-native AI agent</strong> that thinks, plans, and executes across every app, browser, and file on your machine — from a single instruction. No scripts. No shortcuts. No manual steps.
           </motion.p>
+          <RelatableWorkflows />
           {!showLaunchCover && (
             <div className="hero-actions">
               <motion.form
@@ -1234,7 +1233,7 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
             )}
           </AnimatePresence>
         </motion.div>
-        
+
         <div className="hero-visual">
           <InteractiveCommandDemo />
           <TaskTimelinePanel compact />
@@ -1244,6 +1243,35 @@ function Hero({ heroRef, centerX, centerY, showLaunchCover }) {
         <span />
       </div>
     </section>
+  );
+}
+
+function RelatableWorkflows() {
+  const tasks = [
+    { icon: Mic, text: "Draft follow-up emails for conference contacts" },
+    { icon: FileText, text: "Highlight overspending in Q2 budget spreadsheet" },
+    { icon: ScanSearch, text: "Summarize deliverables from client proposal" },
+    { icon: RadioTower, text: "Update Notion calendar with Slack standup move" },
+    { icon: History, text: "Flag unread emails needing today's reply" },
+    { icon: Fingerprint, text: "Send connection requests to profile viewers" }
+  ];
+
+  return (
+    <div className="relatable-workflows" aria-label="Common user workflows">
+      {tasks.map((task, i) => (
+        <motion.div
+          key={i}
+          className="workflow-pill"
+          initial={{ opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 + i * 0.08, duration: 0.5 }}
+          whileHover={{ x: 6, backgroundColor: "rgba(255, 255, 255, 0.08)" }}
+        >
+          <span className="pill-icon"><task.icon size={13} strokeWidth={2.5} /></span>
+          <span>{task.text}</span>
+        </motion.div>
+      ))}
+    </div>
   );
 }
 
@@ -1294,8 +1322,13 @@ function LogoContinuityBridge() {
 }
 
 function LaunchSoonSection() {
-  const launchDate = useMemo(() => new Date("2026-05-07T00:00:00"), []);
+  const launchDate = useMemo(() => new Date("2026-05-09T00:00:00"), []);
   const [remaining, setRemaining] = useState(() => Math.max(0, launchDate.getTime() - Date.now()));
+  const [earlyEmail, setEarlyEmail] = useState("");
+  const [earlySubmitted, setEarlySubmitted] = useState(false);
+  const [earlyFocused, setEarlyFocused] = useState(false);
+  const [earlyTyping, setEarlyTyping] = useState(false);
+  const isEarlyValid = useMemo(() => /.+@.+\..+/.test(earlyEmail), [earlyEmail]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -1307,13 +1340,31 @@ function LaunchSoonSection() {
     return () => window.clearInterval(interval);
   }, [launchDate]);
 
+  const handleEarlySubmit = async (event) => {
+    event.preventDefault();
+    if (!isEarlyValid) return;
+    const saved = JSON.parse(window.localStorage.getItem("newatoWaitlistEmails") || "[]");
+    if (!saved.includes(earlyEmail)) {
+      window.localStorage.setItem("newatoWaitlistEmails", JSON.stringify([...saved, earlyEmail]));
+    }
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: earlyEmail }),
+      });
+    } catch (e) {
+      // saved locally
+    }
+    setEarlySubmitted(true);
+  };
+
   const totalSeconds = Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  
-  // Progress based on a fixed start date (e.g., May 1st, 2026)
+
   const startDate = new Date("2026-05-01T00:00:00").getTime();
   const totalDuration = launchDate.getTime() - startDate;
   const progress = Math.min(100, Math.max(0, ((totalDuration - remaining) / totalDuration) * 100));
@@ -1338,22 +1389,114 @@ function LaunchSoonSection() {
         <span className="axis-bloom-core" />
       </div>
       <div className="launch-soon-content">
-        <span className="eyebrow">Newato rollout</span>
-        <h2>Launching Very Soon</h2>
-        <p>We are polishing the execution layer before opening the first private access window.</p>
 
-        <div className="launch-countdown-strip" aria-label="Countdown to launch">
+        <motion.h2
+          initial={{ opacity: 0, y: 28, filter: "blur(14px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ delay: 0.12, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          Launching Very Soon
+        </motion.h2>
+
+
+        <motion.div
+          className="launch-countdown-strip"
+          aria-label="Countdown to launch"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        >
           {countdown.map((item) => (
             <div className="countdown-segment" key={item.label}>
               <strong>{String(item.value).padStart(2, "0")}</strong>
               <span>{item.label}</span>
             </div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="launch-progress" aria-hidden="true">
           <span style={{ width: `${progress}%` }} />
         </div>
+
+        <motion.div
+          className="early-access-card"
+          initial={{ opacity: 0, y: 32, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.44, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="early-access-glow" aria-hidden="true" />
+          <div className="early-access-header">
+            <div className="early-access-icon">
+              <Zap size={18} />
+            </div>
+            <div>
+              <strong>Get Early Access</strong>
+              <span>Be among the first operators to use Newato</span>
+            </div>
+          </div>
+          <AnimatePresence mode="wait">
+            {earlySubmitted ? (
+              <motion.div
+                className="early-success"
+                key="success"
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Check size={22} />
+                <div>
+                  <strong>You're on the list!</strong>
+                  <span>We'll reach out with your private access link.</span>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="form"
+                className="early-access-form"
+                onSubmit={handleEarlySubmit}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <label htmlFor="early-email" className="sr-only">Email address</label>
+                <motion.div
+                  className={`early-input-wrap ${earlyFocused ? 'is-focused' : ''} ${earlyTyping ? 'is-typing' : ''}`}
+                  animate={earlyFocused ? { scale: 1.018 } : { scale: 1 }}
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <span className="early-input-scan" aria-hidden="true" />
+                  <input
+                    id="early-email"
+                    type="email"
+                    value={earlyEmail}
+                    onChange={(e) => { setEarlyEmail(e.target.value); setEarlyTyping(e.target.value.length > 0); }}
+                    onFocus={() => setEarlyFocused(true)}
+                    onBlur={() => setEarlyFocused(false)}
+                    placeholder="Enter your email address"
+                    aria-label="Email address for early access"
+                  />
+                  <motion.button
+                    type="submit"
+                    className="early-submit-btn"
+                    disabled={!isEarlyValid}
+                    animate={isEarlyValid ? { opacity: 1, x: 0 } : { opacity: 0.45, x: 0 }}
+                    whileHover={isEarlyValid ? { scale: 1.04 } : {}}
+                    whileTap={isEarlyValid ? { scale: 0.97 } : {}}
+                  >
+                    <span>Request Access</span>
+                    <motion.span
+                      animate={isEarlyValid ? { x: [0, 3, 0] } : { x: 0 }}
+                      transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 1.2 }}
+                    >
+                      <ArrowRight size={16} />
+                    </motion.span>
+                  </motion.button>
+                </motion.div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );
@@ -1376,7 +1519,7 @@ function CommandPalette({ mini = false }) {
         </div>
         <div className="command-input">
           <span>Ask Newato to execute...</span>
-          <strong>Pull GHL data into Sheets</strong>
+          <strong>Map competitive landscape and synthesize positioning gaps</strong>
         </div>
       </div>
       <div className="command-actions">
@@ -1456,18 +1599,18 @@ function ExecutionDetailCard() {
       <div className="panel-header">
         <div>
           <span className="panel-kicker">Execution detail</span>
-          <h3>GHL to Notion handoff</h3>
+          <h3>Competitive Gap Analysis</h3>
         </div>
         <span className="status-badge done">done</span>
       </div>
       <div className="metrics-grid">
         <div>
-          <small>Vision calls saved</small>
-          <strong>{tokens}%</strong>
+          <small>Total tokens processed</small>
+          <strong>6.1k</strong>
         </div>
         <div>
-          <small>Steps completed</small>
-          <strong>{completed}/9</strong>
+          <small>Execution steps</small>
+          <strong>{completed}/14</strong>
         </div>
       </div>
       <div className="chat-bubble">
@@ -1490,44 +1633,59 @@ function InteractiveCommandDemo() {
   const [typed, setTyped] = useState("");
   const [visibleSteps, setVisibleSteps] = useState(0);
   const [tokens, setTokens] = useState(0);
+  const [commandIndex, setCommandIndex] = useState(0);
+
+  const commands = [
+    "Map competitive landscape and synthesize positioning gaps",
+    "Search Google Drive for the March client proposal and summarise deliverables"
+  ];
 
   useEffect(() => {
-    const command = "Pull GHL data into Sheets";
-    let interval;
-    let timeout;
+    let isMounted = true;
 
-    const run = () => {
+    const runDemo = async () => {
+      if (!isMounted) return;
+      const command = commands[commandIndex];
+
+      // Reset
       setPhase(0);
       setTyped("");
       setVisibleSteps(0);
       setTokens(0);
 
-      let index = 0;
-      interval = setInterval(() => {
-        index += 1;
-        setTyped(command.slice(0, index));
-        if (index === command.length) {
-          clearInterval(interval);
-          setPhase(1);
+      await new Promise(r => setTimeout(r, 1200));
 
-          steps.forEach((_, stepIndex) => {
-            setTimeout(() => setVisibleSteps(stepIndex + 1), 520 + stepIndex * 430);
-          });
+      // Human-like typing
+      for (let i = 0; i <= command.length; i++) {
+        if (!isMounted) return;
+        setTyped(command.slice(0, i));
+        await new Promise(r => setTimeout(r, 40 + Math.random() * 55));
+      }
 
-          setTimeout(() => setPhase(2), 2400);
-        }
-      }, 80);
+      await new Promise(r => setTimeout(r, 800));
+      setPhase(1);
 
-      timeout = setTimeout(run, 6200);
+      // Staggered steps
+      for (let i = 1; i <= steps.length; i++) {
+        if (!isMounted) return;
+        setVisibleSteps(i);
+        await new Promise(r => setTimeout(r, 500 + Math.random() * 120));
+      }
+
+      await new Promise(r => setTimeout(r, 600));
+      setPhase(2);
+
+      await new Promise(r => setTimeout(r, 8000));
+      if (isMounted) {
+        setCommandIndex((prev) => (prev + 1) % commands.length);
+        runDemo();
+      }
     };
 
-    run();
+    runDemo();
 
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
+    return () => { isMounted = false; };
+  }, [commandIndex]);
 
   useEffect(() => {
     if (phase !== 2) return undefined;
@@ -1535,8 +1693,8 @@ function InteractiveCommandDemo() {
     let frame;
     const start = performance.now();
     const tick = (now) => {
-      const progress = Math.min((now - start) / 900, 1);
-      setTokens(Math.round(70 * (1 - Math.pow(1 - progress, 3))));
+      const progress = Math.min((now - start) / 1200, 1);
+      setTokens(Math.round(92 * (1 - Math.pow(1 - progress, 4))));
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
 
@@ -1782,17 +1940,17 @@ function ProductStackSection() {
 
 function TrustSection() {
   const permissionRows = [
-    ["Full plan preview", "Before run", Workflow],
-    ["Locked step", "Pause at step 6", LockKeyhole],
-    ["Mouse touched", "Auto-pause", MousePointer2],
-    ["Resume with context", "Re-plan", Brain],
+    ["Full plan generated", "Before execution begins", Workflow],
+    ["Step locked by operator", "Paused at step 6", LockKeyhole],
+    ["Human input detected", "Execution suspended", MousePointer2],
+    ["Context preserved", "Agent re-plans and resumes", Brain],
   ];
 
   return (
     <section id="trust" className="trust-section section-pad">
       <div className="section-heading reveal">
-        <span className="eyebrow">Pause-Resume-Tweak</span>
-        <h2>You stay in control. Newato keeps moving.</h2>
+        <span className="eyebrow">Transparent by design</span>
+        <h2>Execution Ledger</h2>
         <p>
           Before execution, Newato shows the full plan. During execution, touching the mouse pauses instantly. After your
           edit, Newato compares the screen, updates the master prompt, and resumes from the checkpoint.
@@ -1818,7 +1976,7 @@ function TrustSection() {
         <div className="trust-panel glass-panel timeline-float">
           <div className="panel-header">
             <div>
-              <span className="panel-kicker">Human control loop</span>
+              <span className="panel-kicker">Transparent by design</span>
               <h3>Execution Ledger</h3>
             </div>
             <Power size={18} />
@@ -1863,17 +2021,17 @@ function CapabilitiesSection() {
         {capabilities.map((capability, index) => {
           const Icon = capability.icon;
           return (
-          <motion.article
-            className="capability-card glass-panel reveal"
-            key={capability.title}
-            whileHover={{ y: -8, scale: 1.015 }}
-            transition={{ type: "spring", stiffness: 260, damping: 22 }}
-            style={{ "--delay": `${index * 60}ms` }}
-          >
-            <Icon size={24} />
-            <h3>{capability.title}</h3>
-            <p>{capability.copy}</p>
-          </motion.article>
+            <motion.article
+              className="capability-card glass-panel reveal"
+              key={capability.title}
+              whileHover={{ y: -8, scale: 1.015 }}
+              transition={{ type: "spring", stiffness: 260, damping: 22 }}
+              style={{ "--delay": `${index * 60}ms` }}
+            >
+              <Icon size={24} />
+              <h3>{capability.title}</h3>
+              <p>{capability.copy}</p>
+            </motion.article>
           );
         })}
       </div>
@@ -1886,52 +2044,114 @@ function WaitlistSection() {
   const [submitted, setSubmitted] = useState(false);
   const isValid = useMemo(() => /.+@.+\..+/.test(email), [email]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!isValid) return;
+    const saved = JSON.parse(window.localStorage.getItem("newatoWaitlistEmails") || "[]");
+    if (!saved.includes(email)) {
+      window.localStorage.setItem("newatoWaitlistEmails", JSON.stringify([...saved, email]));
+    }
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+    } catch (e) { /* saved locally */ }
     setSubmitted(true);
   };
 
   return (
     <section id="waitlist" className="waitlist-section section-pad">
       <div className="waitlist-glow" />
-      <div className="section-heading reveal">
-        <span className="eyebrow">Early access</span>
-        <h2>The future won't click. NEWATO will command.</h2>
-        <p>Join the private rollout for operators who want one intelligence layer above every tool they already use.</p>
+      <div className="waitlist-particles" aria-hidden="true">
+        {[...Array(6)].map((_, i) => <span key={i} className={`w-particle w-p-${i}`} />)}
       </div>
-      <form className="waitlist-form glass-panel reveal" onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-              setSubmitted(false);
-            }}
-            type="email"
-            placeholder="you@company.com"
-            aria-label="Email address"
-          />
-        </div>
-        <button type="submit" disabled={!isValid}>
-          Join Early Access
-          <ArrowRight size={18} />
-        </button>
-      </form>
-      <AnimatePresence>
-        {submitted && (
-          <motion.p
-            className="submission-note"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+      <motion.div
+        className="waitlist-inner"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="section-heading">
+          <motion.span
+            className="waitlist-badge"
+            initial={{ opacity: 0, scale: 0.88 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            You're on the list. NEWATO will be in touch.
-          </motion.p>
-        )}
-      </AnimatePresence>
+            <span className="waitlist-badge-dot" />
+            Private Access · 500 Seats
+          </motion.span>
+          <h2>The future doesn&apos;t click through menus.<br />It commands.</h2>
+          <p>Join the private rollout. One intelligence layer. Every tool you already use — finally working for you.</p>
+        </div>
+
+        <div className="waitlist-card glass-panel">
+          <div className="waitlist-card-shine" aria-hidden="true" />
+          <div className="waitlist-perks">
+            {[
+              { icon: Zap, text: "Priority access to the full Newato agent runtime" },
+              { icon: ShieldCheck, text: "Pause-resume execution control from day one" },
+              { icon: Brain, text: "Workflow graph trained on your environment" },
+            ].map(({ icon: Icon, text }) => (
+              <div className="waitlist-perk" key={text}>
+                <span className="perk-icon"><Icon size={15} /></span>
+                <span>{text}</span>
+              </div>
+            ))}
+          </div>
+
+          <AnimatePresence mode="wait">
+            {submitted ? (
+              <motion.div
+                key="success"
+                className="waitlist-success"
+                initial={{ opacity: 0, scale: 0.9, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="success-icon"><Check size={24} /></div>
+                <div>
+                  <strong>You&apos;re in.</strong>
+                  <span>Newato will reach out with your private access link when your slot opens.</span>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="form"
+                className="waitlist-form-inner"
+                onSubmit={handleSubmit}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <label htmlFor="waitlist-email" className="sr-only">Email address</label>
+                <div className="waitlist-input-row">
+                  <input
+                    id="waitlist-email"
+                    value={email}
+                    onChange={(event) => { setEmail(event.target.value); setSubmitted(false); }}
+                    type="email"
+                    placeholder="you@company.com"
+                    aria-label="Email address"
+                  />
+                  <button type="submit" className="waitlist-submit" disabled={!isValid}>
+                    Request Early Access
+                    <ArrowRight size={17} />
+                  </button>
+                </div>
+                <p className="waitlist-trust">
+                  <LockKeyhole size={11} /> No spam. No noise. Limited to 500 operators in the first cohort.
+                </p>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </section>
   );
 }
