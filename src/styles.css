@@ -5050,7 +5050,7 @@ h1 span:first-child {
 
 @media (max-width: 560px) {
   .brand-lockup span:last-child {
-    display: none;
+    display: block;
   }
 
   .nav-cta {
