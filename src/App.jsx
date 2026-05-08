@@ -1322,7 +1322,7 @@ function LogoContinuityBridge() {
 }
 
 function LaunchSoonSection() {
-  const launchDate = useMemo(() => new Date("2026-05-09T00:00:00"), []);
+  const launchDate = useMemo(() => new Date("2026-05-15T00:00:00"), []);
   const [remaining, setRemaining] = useState(() => Math.max(0, launchDate.getTime() - Date.now()));
   const [earlyEmail, setEarlyEmail] = useState("");
   const [earlySubmitted, setEarlySubmitted] = useState(false);
